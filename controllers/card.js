@@ -68,7 +68,7 @@ module.exports.dislikeCard = (req, res) => {
       res.status(200).send({data: card});
     })
     .catch((err) => {
-      if (err.name === 'NotFoundError') {
+      if (err.name === 'BadRequestError') {
         return res.status(400).send({message: 'Передан несуществующий _id карточки.'});
       }
         return res.status(500).send({message: 'Произошла ошибка на сервере'});

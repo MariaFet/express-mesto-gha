@@ -10,13 +10,13 @@ module.exports.getUser = (req, res) => {
   User.findById(req.params._id)
   .then((user) => {
     if (!user) {
-      return res.status(400).send({message: 'Пользователь по указанному _id не найден.'})
+      return res.status(404).send({message: 'Пользователь по указанному _id не найден.'})
     }
     res.status(200).send({data: user});
   })
   .catch((err) => {
-    if (err.name === 'NotFoundError') {
-      return res.status(404).send({message: 'Пользователя с запрашиваемым id не существует.'});
+    if (err.name === 'BadRequestError') {
+      return res.status(400).send({message: 'Пользователя с запрашиваемым id не существует.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
   });
@@ -29,7 +29,7 @@ module.exports.createUser = (req, res) => {
     res.status(201).send({data: user});
   })
   .catch((err) => {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'BadRequestError') {
       return res.status(400).send({message: 'Переданы некорректные данные при создании пользователя.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
@@ -46,7 +46,7 @@ module.exports.updateUser = (req, res) => {
     res.status(200).send({data: user});
   })
   .catch((err) => {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'BadRequestError') {
       return res.status(400).send({message: 'Переданы некорректные данные при обновлении пользователя.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
@@ -63,7 +63,7 @@ module.exports.updateUserAvatar = (req, res) => {
     res.status(200).send({data: user});
   })
   .catch((err) => {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'BadRequestError') {
       return res.status(400).send({message: 'Переданы некорректные данные при обновлении пользователя.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
