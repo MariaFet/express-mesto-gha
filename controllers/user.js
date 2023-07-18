@@ -10,13 +10,13 @@ module.exports.getUser = (req, res) => {
   User.findById(req.params._id)
   .then((user) => {
     if (!user) {
-      return res.status(404).send({message: 'Пользователь по указанному _id не найден.'})
+      return res.status(400).send({message: 'Пользователь по указанному _id не найден.'})
     }
     res.status(200).send({data: user});
   })
   .catch((err) => {
-    if (err.name === 'ValidationError') {
-      return res.status(400).send({message: 'Пользователя с запрашиваемым id не существует.'});
+    if (err.name === 'NotFoundError') {
+      return res.status(404).send({message: 'Пользователя с запрашиваемым id не существует.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
   });

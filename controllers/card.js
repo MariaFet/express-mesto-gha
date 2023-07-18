@@ -30,7 +30,7 @@ module.exports.deleteCard = (req, res) => {
     res.status(200).send({data: card});
   })
   .catch((err) => {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'NotFoundError') {
       return res.status(400).send({message: 'Передан несуществующий _id карточки.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
@@ -49,7 +49,7 @@ module.exports.likeCard = (req, res) => {
       res.status(200).send({data: card});
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'NotFoundError') {
         return res.status(400).send({message: 'Передан несуществующий _id карточки.'});
       }
         return res.status(500).send({message: 'Произошла ошибка на сервере'});
@@ -68,7 +68,7 @@ module.exports.dislikeCard = (req, res) => {
       res.status(200).send({data: card});
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'NotFoundError') {
         return res.status(400).send({message: 'Передан несуществующий _id карточки.'});
       }
         return res.status(500).send({message: 'Произошла ошибка на сервере'});
