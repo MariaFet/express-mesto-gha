@@ -25,12 +25,16 @@ module.exports.createUser = (req, res) => {
   const {name, about, avatar} = req.body;
   User.create({name, about, avatar})
   .then((user) => {
-  if (!user) {
-    throw new BadRequestError('Переданы некорректные данные при создании пользователя.');
-  }
-  res.status(201).status(200).send({data: user});
-})
-.catch((err) => {throw new ServerError('Произошла ошибка на сервере')});
+    res.status(201).send({data: user});
+  })
+  .catch((err) => {
+    if (err.name === 'ValidationError') {
+      throw new BadRequestError('Переданы некорректные данные при создании пользователя.');
+    }
+    else {
+      throw new ServerError('Произошла ошибка на сервере')
+    }
+  });
 };
 
 module.exports.updateUser = (req, res) => {
