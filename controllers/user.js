@@ -29,7 +29,7 @@ module.exports.createUser = (req, res) => {
     res.status(201).send({data: user});
   })
   .catch((err) => {
-    if (err.name === 'CastError') {
+    if (err.name === 'ValidationError') {
       return res.status(400).send({message: 'Переданы некорректные данные при создании пользователя.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
@@ -46,7 +46,7 @@ module.exports.updateUser = (req, res) => {
     res.status(200).send({data: user});
   })
   .catch((err) => {
-    if (err.name === 'CastError') {
+    if (err.name === 'ValidationError') {
       return res.status(400).send({message: 'Переданы некорректные данные при обновлении пользователя.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
@@ -63,7 +63,7 @@ module.exports.updateUserAvatar = (req, res) => {
     res.status(200).send({data: user});
   })
   .catch((err) => {
-    if (err.name === 'CastError') {
+    if (err.name === 'ValidationError') {
       return res.status(400).send({message: 'Переданы некорректные данные при обновлении пользователя.'});
     }
       return res.status(500).send({message: 'Произошла ошибка на сервере'});
