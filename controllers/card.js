@@ -11,31 +11,31 @@ module.exports.createCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      next(new ServerError('Произошла ошибка на сервере'));
+      return next(new ServerError('Произошла ошибка на сервере'));
     });
 };
 
-module.exports.getAllCards = (req, res) => {
+module.exports.getAllCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => { throw new ServerError('Произошла ошибка на сервере.'); });
+    .catch(() => { next(new ServerError('Произошла ошибка на сервере.')); });
 };
 
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка с указанным _id не найдена.'));
+        return next(new NotFoundError('Карточка с указанным _id не найдена.'));
       }
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      next(new ServerError('Произошла ошибка на сервере'));
+      return next(new ServerError('Произошла ошибка на сервере'));
     });
 };
 
@@ -47,15 +47,15 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        next(new NotFoundError('Карточка с указанным _id не найдена.'));
+        return next(new NotFoundError('Карточка с указанным _id не найдена.'));
       }
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      next(new ServerError('Произошла ошибка на сервере'));
+      return next(new ServerError('Произошла ошибка на сервере'));
     });
 };
 
@@ -73,8 +73,8 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      next(new ServerError('Произошла ошибка на сервере'));
+      return next(new ServerError('Произошла ошибка на сервере'));
     });
 };
