@@ -9,19 +9,19 @@ module.exports.getAllUsers = (req, res) => {
     .catch(() => { throw new ServerError('Произошла ошибка на сервере'); });
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
+        throw new NotFoundError('Пользователь с указанным _id не найден.');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
+        next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      throw new ServerError('Произошла ошибка на сервере');
+      next(new ServerError('Произошла ошибка на сервере'));
     });
 };
 
@@ -33,42 +33,42 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      next(new ServerError('Произошла ошибка на сервере'));
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
+        throw new NotFoundError('Пользователь с указанным _id не найден.');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
+        next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      throw new ServerError('Произошла ошибка на сервере');
+      next(new ServerError('Произошла ошибка на сервере'));
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Карточка с указанным _id не найдена.');
+        throw new NotFoundError('Пользователь с указанным _id не найден.');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
+        next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      throw new ServerError('Произошла ошибка на сервере');
+      next(new ServerError('Произошла ошибка на сервере'));
     });
 };
