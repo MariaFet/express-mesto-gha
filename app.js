@@ -14,7 +14,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 });
 
 app.use(express.json());
-app.use((err, req, res, next) => {
+app.use((req, res, next) => {
   req.user = {
     _id: '64b59bb2bd6dc00b5af5d413',
   };
@@ -27,7 +27,7 @@ app.use('*', (req, res) => {
 });
 app.use((err, req, res, next) => {
   const { statusCode, message } = err;
-  res.status(statusCode).send({ message });
+  res.status(statusCode || 200).send({ message });
   next();
 });
 
