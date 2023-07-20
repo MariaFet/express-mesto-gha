@@ -1,7 +1,7 @@
 const User = require('../models/user');
-const { BadRequestError } = require('../errors/BadRequestError');
-const { NotFoundError } = require('../errors/NotFoundError');
-const { ServerError } = require('../errors/ServerError');
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
+const ServerError = require('../errors/ServerError');
 
 module.exports.getAllUsers = (req, res) => {
   User.find({})
@@ -33,9 +33,9 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      next(new ServerError('Произошла ошибка на сервере'));
+      return next(new ServerError('Произошла ошибка на сервере'));
     });
 };
 
