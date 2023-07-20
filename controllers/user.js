@@ -6,22 +6,22 @@ const ServerError = require('../errors/ServerError');
 module.exports.getAllUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => new ServerError('Произошла ошибка на сервере'));
+    .catch(() => { throw new ServerError('Произошла ошибка на сервере'); });
 };
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params._id)
     .then((user) => {
       if (!user) {
-        return new NotFoundError('Карточка с указанным _id не найдена.');
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return new BadRequestError('Переданы некорректные данные при создании карточки.');
+        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
       }
-      return new ServerError('Произошла ошибка на сервере');
+      throw new ServerError('Произошла ошибка на сервере');
     });
 };
 
@@ -33,9 +33,9 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return new BadRequestError('Переданы некорректные данные при создании карточки.');
+        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
       }
-      return new ServerError('Произошла ошибка на сервере');
+      throw new ServerError('Произошла ошибка на сервере');
     });
 };
 
@@ -44,15 +44,15 @@ module.exports.updateUser = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        return new NotFoundError('Карточка с указанным _id не найдена.');
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return new BadRequestError('Переданы некорректные данные при создании карточки.');
+        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
       }
-      return new ServerError('Произошла ошибка на сервере');
+      throw new ServerError('Произошла ошибка на сервере');
     });
 };
 
@@ -61,14 +61,14 @@ module.exports.updateUserAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        return new NotFoundError('Карточка с указанным _id не найдена.');
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return new BadRequestError('Переданы некорректные данные при создании карточки.');
+        throw new BadRequestError('Переданы некорректные данные при создании карточки.');
       }
-      return new ServerError('Произошла ошибка на сервере');
+      throw new ServerError('Произошла ошибка на сервере');
     });
 };
