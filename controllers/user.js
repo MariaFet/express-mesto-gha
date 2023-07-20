@@ -13,7 +13,7 @@ module.exports.getUser = (req, res, next) => {
   User.findById(req.params._id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь с указанным _id не найден.');
+        next(new NotFoundError('Пользователь с указанным _id не найден.'));
       }
       return res.send({ data: user });
     })
@@ -44,7 +44,7 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь с указанным _id не найден.');
+        next(new NotFoundError('Пользователь с указанным _id не найден.'));
       }
       return res.send({ data: user });
     })
@@ -61,7 +61,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь с указанным _id не найден.');
+        next(new NotFoundError('Пользователь с указанным _id не найден.'));
       }
       return res.send({ data: user });
     })
