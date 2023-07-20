@@ -44,9 +44,9 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Пользователь с указанным _id не найден.'));
+        throw new NotFoundError('Пользователь с указанным _id не найден.');
       }
-      return res.send({ data: user });
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -63,7 +63,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
       if (!user) {
         next(new NotFoundError('Пользователь с указанным _id не найден.'));
       }
-      return res.send({ data: user });
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
