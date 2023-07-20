@@ -25,7 +25,7 @@ module.exports.getUser = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => {
@@ -33,9 +33,9 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
+        res.send(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      next(new ServerError('Произошла ошибка на сервере'));
+      res.send(new ServerError('Произошла ошибка на сервере'));
     });
 };
 
