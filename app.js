@@ -18,14 +18,17 @@ app.use((err, req, res, next) => {
   req.user = {
     _id: '64b59bb2bd6dc00b5af5d413',
   };
-  const { statusCode, message } = err;
-  res.status(statusCode).send({ message });
   next();
 });
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемая страница не найдена.' });
+});
+app.use((err, req, res, next) => {
+  const { statusCode, message } = err;
+  res.status(statusCode).send({ message });
+  next();
 });
 
 app.listen(PORT);
