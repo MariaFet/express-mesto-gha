@@ -2,6 +2,7 @@ const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ServerError = require('../errors/ServerError');
+const NotAuthorizedError = require('../errors/NotAuthorizedError');
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -28,6 +29,9 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (!card) {
         return next(new NotFoundError('Карточка с указанным _id не найдена.'));
+      }
+      if (card.owner !== req.user._id) {
+        return next(new NotAuthorizedError('Нет прав для удаления карточки.'));
       }
       return res.send({ data: card });
     })

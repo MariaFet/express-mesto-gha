@@ -1,7 +1,12 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ServerError = require('../errors/ServerError');
+const ConflictingRequestError = require('../errors/ConflictingRequestError');
+
+const { JWT_SECRET } = process.env;
 
 module.exports.getAllUsers = (req, res, next) => {
   User.find({})
@@ -26,14 +31,24 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => {
+      const {
+        name, about, avatar, email,
+      } = req.body;
+      User.create({
+        name, about, avatar, email, password: hash,
+      });
+    })
     .then((user) => {
       res.status(201).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
+      }
+      if (err.code === 1100) {
+        return next(new ConflictingRequestError('Пользователь с данной почтой уже существует.'));
       }
       return next(new ServerError('Произошла ошибка на сервере'));
     });
@@ -67,6 +82,46 @@ module.exports.updateUserAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
+      }
+      return next(new ServerError('Произошла ошибка на сервере'));
+    });
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        return next(new BadRequestError('Неправильные почта или пароль'));
+      }
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return next(new BadRequestError('Неправильные почта или пароль'));
+          }
+          const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+          return res.send({ token });
+        });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
+      }
+      return next(new ServerError('Произошла ошибка на сервере'));
+    });
+};
+
+module.exports.getCurrentUserInfo = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        return next(new NotFoundError('Пользователь с указанным _id не найден.'));
+      }
+      return res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
         return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
       return next(new ServerError('Произошла ошибка на сервере'));
