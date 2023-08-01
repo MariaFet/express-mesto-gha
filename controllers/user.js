@@ -43,7 +43,9 @@ module.exports.createUser = (req, res, next) => {
     })
     .then(() => {
       res.status(201).send({
-        data: name, about, avatar, email,
+        data: {
+          name, about, avatar, email,
+        },
       });
     })
     .catch((err) => {
@@ -96,7 +98,7 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return next(new BadRequestError('Неправильные пароль или почта.'));
+        return next(new NotAuthorizedError('Неправильные пароль или почта.'));
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
