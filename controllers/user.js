@@ -7,7 +7,7 @@ const ServerError = require('../errors/ServerError');
 const ConflictingRequestError = require('../errors/ConflictingRequestError');
 const NotAuthorizedError = require('../errors/NotAuthorizedError');
 
-const { JWT_SECRET } = process.env;
+const JWT_SECRET = 'df740be8e1dd975abfe3aee5fecab33b700a4c3da01e44ba135240a0cccb1ac5';
 
 module.exports.getAllUsers = (req, res, next) => {
   User.find({})
