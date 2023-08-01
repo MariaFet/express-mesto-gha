@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: (v) => {
         const url = /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?/;
-        return v.test(url);
+        return url.test(v);
       },
       message: 'Неправильный формат ссылки',
     },

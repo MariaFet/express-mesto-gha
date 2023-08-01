@@ -5,6 +5,7 @@ const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ServerError = require('../errors/ServerError');
 const ConflictingRequestError = require('../errors/ConflictingRequestError');
+const NotAuthorizedError = require('../errors/NotAuthorizedError');
 
 const { JWT_SECRET } = process.env;
 
@@ -31,11 +32,11 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email,
+  } = req.body;
   bcrypt.hash(req.body.password, 10)
     .then((hash) => {
-      const {
-        name, about, avatar, email,
-      } = req.body;
       User.create({
         name, about, avatar, email, password: hash,
       });
@@ -44,11 +45,11 @@ module.exports.createUser = (req, res, next) => {
       res.status(201).send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
-      }
       if (err.code === 1100) {
         return next(new ConflictingRequestError('Пользователь с данной почтой уже существует.'));
+      }
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
       return next(new ServerError('Произошла ошибка на сервере'));
     });
@@ -98,7 +99,7 @@ module.exports.login = (req, res, next) => {
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return next(new BadRequestError('Неправильные почта или пароль'));
+            return next(new NotAuthorizedError('Неправильные почта или пароль'));
           }
           const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
           return res.send({ token });
