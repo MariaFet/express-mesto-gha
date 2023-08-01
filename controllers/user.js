@@ -49,7 +49,7 @@ module.exports.createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      if (err.code === 1100) {
+      if (err.code === 11000) {
         return next(new ConflictingRequestError('Пользователь с данной почтой уже существует.'));
       }
       if (err.name === 'ValidationError') {
@@ -95,7 +95,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email }).select('+password')
+  return User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return next(new NotAuthorizedError('Неправильные пароль или почта.'));
