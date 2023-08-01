@@ -28,7 +28,6 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    index: true,
     unique: true,
     validate: {
       validator: (v) => isEmail(v),
@@ -42,5 +41,7 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
+
+userSchema.path('email').index({ unique: true });
 
 module.exports = mongoose.model('user', userSchema);
