@@ -6,7 +6,6 @@ const NotFoundError = require('../errors/NotFoundError');
 const ServerError = require('../errors/ServerError');
 const ConflictingRequestError = require('../errors/ConflictingRequestError');
 const NotAuthorizedError = require('../errors/NotAuthorizedError');
-const cookie = require('cookie-parser');
 
 const JWT_SECRET = 'df740be8e1dd975abfe3aee5fecab33b700a4c3da01e44ba135240a0cccb1ac5';
 
@@ -123,7 +122,7 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.getCurrentUserInfo = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.user._id.toString())
     .then((user) => {
       if (!user) {
         return next(new NotFoundError('Пользователь с указанным _id не найден.'));

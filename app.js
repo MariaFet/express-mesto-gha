@@ -3,12 +3,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
+const cookie = require('cookie-parser');
 const userRouter = require('./routes/user');
 const cardRouter = require('./routes/card');
 const { createUser, login } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const { validateCreateUser, validateLogin } = require('./middlewares/validator');
-const cookie = require('cookie-parser');
 
 const app = express();
 const { PORT = 3000 } = process.env;
