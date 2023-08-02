@@ -8,6 +8,7 @@ const cardRouter = require('./routes/card');
 const { createUser, login } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const { validateCreateUser, validateLogin } = require('./middlewares/validator');
+const cookie = require('cookie-parser');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -16,8 +17,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
+  autoIndex: true,
+  useUnifiedTopology: false,
 });
-
+app.use(cookie());
 app.use(express.json());
 app.post('/signup', validateCreateUser, createUser);
 app.post('/signin', validateLogin, login);

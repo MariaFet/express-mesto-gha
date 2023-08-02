@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    index: true,
     validate: {
       validator: (v) => isEmail(v),
       message: 'Неправильный формат электронной почты.',
@@ -42,6 +43,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.path('email').index({ unique: true });
+//userSchema.path('email').index({ unique: true });
+//userSchema.index({ email: 1 }, { unique: true });
 
 module.exports = mongoose.model('user', userSchema);
