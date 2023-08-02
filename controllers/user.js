@@ -31,11 +31,11 @@ module.exports.getUser = (req, res, next) => {
     });
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = async (req, res, next) => {
   const {
     name, about, avatar, email,
   } = req.body;
-  const isEmailTaken = User.findOne({ email });
+  const isEmailTaken = await User.findOne({ email });
   if (isEmailTaken) {
     return next(new ConflictingRequestError('Пользователь с данной почтой уже существует.'));
   }
@@ -53,9 +53,9 @@ module.exports.createUser = (req, res, next) => {
       });
     })
     .catch((err) => {
-      /* if (err.code === 11000) {
+      if (err.code === 11000) {
         return next(new ConflictingRequestError('Пользователь с данной почтой уже существует.'));
-      } */
+      }
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
