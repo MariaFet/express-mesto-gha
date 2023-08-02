@@ -5,9 +5,9 @@ const {
 const { validateUpdateUser, validateUpdateUserAvatar, validateGetUser } = require('../middlewares/validator');
 
 userRouter.get('/', getAllUsers);
-userRouter.get('/:_id', validateGetUser, getUser);
+userRouter.get('/me', getCurrentUserInfo);
+userRouter.get('/:userId', validateGetUser, getUser);
 userRouter.patch('/me', validateUpdateUser, updateUser);
 userRouter.patch('/me/avatar', validateUpdateUserAvatar, updateUserAvatar);
-userRouter.get('/me', getCurrentUserInfo);
 
 module.exports = userRouter;
