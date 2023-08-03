@@ -1,7 +1,6 @@
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-const ServerError = require('../errors/ServerError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.createCard = (req, res, next) => {
@@ -14,18 +13,18 @@ module.exports.createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };
 
 module.exports.getAllCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => { next(new ServerError('Произошла ошибка на сервере.')); });
+    .catch((err) => next(err));
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
         return next(new NotFoundError('Карточка с указанным _id не найдена.'));
@@ -33,13 +32,15 @@ module.exports.deleteCard = (req, res, next) => {
       if (card.owner.toString() !== req.user._id.toString()) {
         return next(new ForbiddenError('Нет прав для удаления карточки.'));
       }
-      return res.send({ data: card });
+      return Card.deleteOne(req.params.cardId)
+        .then(() => res.send({ data: card }))
+        .catch(() => next());
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };
 
@@ -59,7 +60,7 @@ module.exports.likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };
 
@@ -79,6 +80,6 @@ module.exports.dislikeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Переданы некорректные данные при создании карточки.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };

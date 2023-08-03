@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
-const ServerError = require('../errors/ServerError');
 const ConflictingRequestError = require('../errors/ConflictingRequestError');
 const NotAuthorizedError = require('../errors/NotAuthorizedError');
 
@@ -12,7 +11,7 @@ const JWT_SECRET = 'df740be8e1dd975abfe3aee5fecab33b700a4c3da01e44ba135240a0cccb
 module.exports.getAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => { next(new ServerError('Произошла ошибка на сервере')); });
+    .catch((err) => next(err));
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -27,7 +26,7 @@ module.exports.getUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };
 
@@ -59,7 +58,7 @@ module.exports.createUser = async (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };
 
@@ -76,7 +75,7 @@ module.exports.updateUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };
 
@@ -93,7 +92,7 @@ module.exports.updateUserAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };
 
@@ -110,18 +109,17 @@ module.exports.login = (req, res, next) => {
             return next(new NotAuthorizedError('Неправильные почта или пароль'));
           }
           const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-          res.cookie('jwt', token, {
+          return res.cookie('jwt', token, {
             maxAge: 3600000,
             httpOnly: true,
           });
-          return res.send({ token });
         });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
       }
-      return next(new ServerError('Произошла ошибка на сервере'));
+      return next(err);
     });
 };
 
@@ -133,10 +131,5 @@ module.exports.getCurrentUserInfo = (req, res, next) => {
       }
       return res.send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Переданы некорректные данные при получении пользователя.'));
-      }
-      return next(new ServerError('Произошла ошибка на сервере'));
-    });
+    .catch((err) => next(err));
 };
