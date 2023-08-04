@@ -18,8 +18,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   autoIndex: true,
   useUnifiedTopology: false,
 });
-app.use(cookie());
+
 app.use(express.json());
+app.use(cookie());
+
 app.post('/signup', validateCreateUser, createUser);
 app.post('/signin', validateLogin, login);
 // app.use(auth);

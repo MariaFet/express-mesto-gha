@@ -109,10 +109,11 @@ module.exports.login = (req, res, next) => {
             return next(new NotAuthorizedError('Неправильные почта или пароль'));
           }
           const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-          return res.cookie('jwt', token, {
+          res.cookie('jwt', token, {
             maxAge: 3600000,
             httpOnly: true,
           });
+          return res.send('Авторизация прошла успешно.');
         });
     })
     .catch((err) => {
