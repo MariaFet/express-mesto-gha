@@ -113,7 +113,7 @@ module.exports.login = (req, res, next) => {
             maxAge: 3600000,
             httpOnly: true,
           });
-          return res.send('Авторизация прошла успешно.');
+          return res.send({ data: 'Авторизация прошла успешно.' });
         });
     })
     .catch((err) => {
